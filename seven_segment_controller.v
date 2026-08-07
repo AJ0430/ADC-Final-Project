@@ -45,7 +45,7 @@ module seven_segment_controller(
 	input [15:0]display_out,
 	output [6:0]hex0, hex1, hex3,
 	output [7:0]hex2
-	
+    
 );
 	 // Gets from output array and converts to seven seg with other modules
     seven_seg_decoder          min_tens (display_out[15:12], hex3);
