@@ -2,47 +2,40 @@ module Bake_Timer_and_Timer_Selection(
     input Time_Up,
     input Time_Down,
     input Reset_Timer_Selection,
-    input [2:0] Temp_Selection,
-
-    output [15:0] Set_Timer,
+    input [3:0] Temp_Selection,
+    output [9:0] Set_Timer,
     output reg [8:0] Set_Temp
-);
+    );
 
-reg [7:0] clock_min = 0;
-reg [7:0] clock_sec = 0;
 
-always @(*) begin
+    always @(*) begin
 
-    if (!Reset_Timer_Selection) begin
-        clock_min = 0;
-        clock_sec = 0;
+        if (!Reset_Timer_Selection) begin
+            Set_Timer <= 0;
+        end
+
+        if (!Time_Up && Set_Timer != 600) begin
+            Set_Timer <= Set_Timer + 30;
+        end
+
+        if (!Time_Down && Set_Timer != 0) begin
+
+            Set_Timer <= Set_Timer - 30;
+        end
+
+
+        case (Temp_Selection)
+            4'b0000: Set_Temp = 300;
+            4'b0001: Set_Temp = 325;
+            4'b0010: Set_Temp = 350;
+            4'b0011: Set_Temp = 375;
+            4'b0100: Set_Temp = 400;
+            4'b0101: Set_Temp = 425;
+            4'b0110: Set_Temp = 450;
+            4'b0111: Set_Temp = 475;
+            4'b0111: Set_Temp = 500;
+            default: Set_Temp = 300;
+        endcase
+
     end
-
-    if (!Time_Up)
-        clock_sec = clock_sec + 5;
-
-    if (!Time_Down)
-        clock_sec = clock_sec - 5;
-
-    if (clock_sec >= 60) begin
-        clock_min = clock_min + 1;
-        clock_sec = clock_sec - 60;
-    end
-
-    case (Temp_Selection)
-        3'b000: Set_Temp = 0;
-        3'b001: Set_Temp = 350;
-        3'b010: Set_Temp = 375;
-        3'b011: Set_Temp = 400;
-        3'b100: Set_Temp = 425;
-        3'b101: Set_Temp = 450;
-        3'b110: Set_Temp = 475;
-        3'b111: Set_Temp = 500;
-        default: Set_Temp = 0;
-    endcase
-
-end
-
-assign Set_Timer = {clock_min, clock_sec};
-
 endmodule

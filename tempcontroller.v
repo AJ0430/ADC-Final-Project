@@ -3,7 +3,7 @@ module ovenTemp(
     input oven_on,  
     input pulse, 
     input clk, 
-    input [7:0] set_temp, 
+    input [8:0] set_temp, 
     output reg heater_on, 
     output reg [8:0] current_temp
     );
@@ -12,7 +12,7 @@ module ovenTemp(
 
     always @(posedge clk) begin
         if (reset_temp) begin
-            current_temp <= 0;
+            current_temp <= 65;
             heater_on <= 0;
         end
         else begin
@@ -29,7 +29,7 @@ module ovenTemp(
                     if (current_temp <= set_temp -2) begin
                         shutoff <= 0;
                     end
-                    if(heater_on == 0) begin
+                    if(heater_on == 0 && current_temp != 0) begin
                         current_temp <= current_temp - 1;
                     end
                 end

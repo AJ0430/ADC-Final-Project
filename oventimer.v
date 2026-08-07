@@ -2,12 +2,12 @@ module oventimer (
     input clk, 
     input tick, 
     input reset, 
-    input [8:0] inittimer, 
+    input [9:0] inittimer, 
     input timer_enable,
-    output reg [8:0] timer_count, 
+    output reg [9:0] timer_count, 
     output timer_done
 );
-    reg [8:0] counter;
+    reg [9:0] counter;
     reg done;
     assign time_done done;
 
