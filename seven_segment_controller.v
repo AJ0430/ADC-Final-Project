@@ -1,5 +1,6 @@
 module seven_seg_decoder(
     input [3:0] bcd,
+    input enable,
     output reg [6:0] seg 
 );
     always @(*) begin
@@ -21,6 +22,7 @@ endmodule
 
 module seven_seg_min_decoder(
     input [3:0] bcd,
+    input enable,
     output reg [7:0] seg 
 );
     always @(*) begin
@@ -40,17 +42,15 @@ module seven_seg_min_decoder(
     end
 endmodule
 
-
-module seven_segment_controller(
-	input [15:0]display_out,
-	output [6:0]hex0, hex1, hex3,
-	output [7:0]hex2
-    
+module time_split(
+    input [9:0] time_in
+    output [15:0] time_out
 );
-	 // Gets from output array and converts to seven seg with other modules
-    seven_seg_decoder          min_tens (display_out[15:12], hex3);
-    seven_seg_min_decoder      min_ones (display_out[11:8], hex2);
-    seven_seg_decoder          seconds_tens (display_out[7:4], hex1);
-    seven_seg_decoder          seconds_ones (display_out[3:0], hex0);
+    always @(*) begin
+    time_out[15:12] = (time_in / 60) / 10;
+    time_out[11:8] = (time_in / 60) % 10;
 
+    time_out[7:4] = (time_in % 60) / 10;
+    time_out[3:0] = (time_in % 60) % 10;
+    end
 endmodule
