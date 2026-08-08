@@ -11,8 +11,6 @@ module ovenTemp(
     output reg preheat_done
     );
     
-    reg shutoff;
-
     always @(posedge clk) begin
         if (reset_temp) begin
             current_temp <= 65;
