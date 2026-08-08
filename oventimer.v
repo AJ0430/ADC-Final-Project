@@ -1,34 +1,31 @@
 module oventimer (
-    input clk, 
-    input tick, 
-    input reset, 
-    input [9:0] inittimer, 
+    input clk,
+    input tick,
+    input reset,
+    input [9:0] inittimer,
     input timer_enable,
-    output reg [9:0] timer_count, 
-    output timer_done
+    output reg [9:0] timer_count,
+    output reg timer_done
 );
-    reg [9:0] counter;
-    reg done;
-    assign time_done done;
 
-    always@(posedge clk) begin
-        if(reset) begin
-            counter <= 0;
+    always @(posedge clk) begin
+        if (reset) begin
+            timer_count <= 0;
+            timer_done  <= 0;
         end
-        if(tick) begin
-            if(timer_enable) begin
-                timer_count <= inittimer - counter;
-                if (counter != inittimer) begin
-                    done <= 0;
-                    counter <= counter +1;
-                end
-                else begin
-                    done <= 1;
-                end
+        else if (!timer_enable) begin
+            timer_count <= inittimer;
+            timer_done  <= 0;
+        end
+        else if (tick && !timer_done) begin
+            if (timer_count > 1) begin
+                timer_count <= timer_count - 1;
             end
             else begin
-                counter <= 0;
+                timer_count <= 0;
+                timer_done  <= 1;
             end
         end
     end
+
 endmodule

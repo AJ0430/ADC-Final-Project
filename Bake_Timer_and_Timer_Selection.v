@@ -2,24 +2,23 @@ module Bake_Timer_and_Timer_Selection(
     input Time_Up,
     input Time_Down,
     input Reset_Timer_Selection,
+    input clk;
     input [3:0] Temp_Selection,
     output [9:0] Set_Timer,
-    output reg [8:0] Set_Temp
+    output [8:0] Set_Temp
     );
 
 
-    always @(*) begin
-
-        if (!Reset_Timer_Selection) begin
+    always @(posedge clk) begin
+        if (Reset_Timer_Selection) begin
             Set_Timer <= 0;
         end
 
-        if (!Time_Up && Set_Timer != 600) begin
+        if (negedge Time_Up && Set_Timer != 600) begin
             Set_Timer <= Set_Timer + 30;
         end
 
-        if (!Time_Down && Set_Timer != 0) begin
-
+        if (negedge Time_Down && Set_Timer != 0) begin
             Set_Timer <= Set_Timer - 30;
         end
 
@@ -33,9 +32,9 @@ module Bake_Timer_and_Timer_Selection(
             4'b0101: Set_Temp = 425;
             4'b0110: Set_Temp = 450;
             4'b0111: Set_Temp = 475;
-            4'b0111: Set_Temp = 500;
+            4'b1000: Set_Temp = 500;
             default: Set_Temp = 300;
         endcase
-
+        
     end
 endmodule
