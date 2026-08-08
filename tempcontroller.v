@@ -10,14 +10,13 @@ module ovenTemp(
     output reg [9:0] current_temp,
     output reg preheat_done
     );
-    
+
     always @(posedge clk) begin
         if (reset_temp) begin
             current_temp <= 65;
             heater_on    <= 0;
             preheat_done <= 0;
-            shutoff      <= 0;
-        end
+            end
 
         else if (pulse) begin
 
