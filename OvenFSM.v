@@ -21,10 +21,10 @@ module OvenFSM(
     wire [9:0] timerout;
     reg temp_on;
     wire [9:0] current_temp;
-    wire [9:0] display_out;
+    reg [9:0] display_out;
     reg [9:0]timesel;
     wire [9:0]timeout;
-    wire timehexsel;
+    reg timehexsel;
 
 	 // State machine
     always @(posedge clk) begin
@@ -139,4 +139,5 @@ module OvenFSM(
     Bake_Timer_and_Timer_Selection tempandtime(temp_up, temp_down, reset, clk, temp_sw, timerset, tempset);
     ovenTemp oventemperature(reset, temp_on, pulse, clk, tempset, preheat, oven_on, heater_on, current_temp, preheat_done);
     oventimer timer(clk, pulse, reset, timerset, timer_start, timerout, timer_done);
+	 seven_segment_controller seg_inst(display_out, timehexsel, HEX0, HEX1, HEX2, HEX3);
 endmodule

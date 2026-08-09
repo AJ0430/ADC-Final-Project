@@ -1,32 +1,32 @@
 module seven_seg_decoder(
     input [3:0] bcd,
-    input enable,
-    output reg [6:0] seg 
-);
-    always @(*) begin
-        case(bcd)
-            4'h0: seg = 7'b1000000; 
-            4'h1: seg = 7'b1111001; 
-            4'h2: seg = 7'b0100100;
-            4'h3: seg = 7'b0110000; 
-            4'h4: seg = 7'b0011001; 
-            4'h5: seg = 7'b0010010; 
-            4'h6: seg = 7'b0000010; 
-            4'h7: seg = 7'b1111000; 
-            4'h8: seg = 7'b0000000; 
-            4'h9: seg = 7'b0010000; 
-            default: seg = 7'b1111111; 
-        endcase
-    end
-endmodule
-
-module seven_seg_min_decoder(
-    input [3:0] bcd,
-    input enable,
+    input type,
+	 input min,
     output reg [7:0] seg 
 );
-    always @(*) begin
-        case(bcd)
+    
+	 always @(*) begin
+	 
+	 // Clock Minute check
+	 if (type == 0 && min == 1) begin
+			case(bcd)
+				// Inserts Decimal
+            4'h0: seg = 8'b01000000; 
+            4'h1: seg = 8'b01111001; 
+            4'h2: seg = 8'b00100100; 
+            4'h3: seg = 8'b00110000; 
+            4'h4: seg = 8'b00011001; 
+            4'h5: seg = 8'b00010010; 
+            4'h6: seg = 8'b00000010; 
+            4'h7: seg = 8'b01111000; 
+            4'h8: seg = 8'b00000000; 
+            4'h9: seg = 8'b00010000;
+            default: seg = 8'b01111111; 
+			endcase
+    end
+	 // Normal digit display
+	 else begin
+			case(bcd)
             4'h0: seg = 8'b11000000; 
             4'h1: seg = 8'b11111001; 
             4'h2: seg = 8'b10100100; 
@@ -36,21 +36,85 @@ module seven_seg_min_decoder(
             4'h6: seg = 8'b10000010; 
             4'h7: seg = 8'b11111000; 
             4'h8: seg = 8'b10000000; 
-            4'h9: seg = 8'b10010000; 
+            4'h9: seg = 8'b10010000;
+				4'h15: seg = 8'b00001110;
             default: seg = 8'b11111111; 
         endcase
-    end
+	 end
+	end
 endmodule
 
-module time_split(
-    input [9:0] time_in
-    output [15:0] time_out
+module seven_segment_controller(
+    input [9:0] time_or_temp_in,
+	 input type,
+    output [7:0] HEX0, HEX1, HEX2, HEX3
 );
-    always @(*) begin
-    time_out[15:12] = (time_in / 60) / 10;
-    time_out[11:8] = (time_in / 60) % 10;
 
-    time_out[7:4] = (time_in % 60) / 10;
-    time_out[3:0] = (time_in % 60) % 10;
+// These are all the variables for this set
+// Time split
+reg [9:0] minutes;
+reg [9:0] seconds;
+// Clock
+reg [3:0] clock_min_tens;
+reg [3:0] clock_min_ones;
+reg [3:0] clock_sec_tens;
+reg [3:0] clock_sec_ones;
+// Display
+reg [3:0] digit0;
+reg [3:0] digit1;
+reg [3:0] digit2;
+reg [3:0] digit3;
+// Temperature
+reg [9:0] Temp;
+reg [3:0] Temp_Hun;
+reg [3:0] Temp_Ten;
+reg [3:0] Temp_One;
+
+always @(*) begin
+	 
+	 // Clock
+	 if (type == 0) begin
+		
+		// Minutes
+		minutes = (time_or_temp_in / 60);
+		// Tens and ones place
+		clock_min_tens = minutes / 10;
+		clock_min_ones = minutes % 10;
+		// Digit assigned
+		digit3 = clock_min_tens;
+		digit2 = clock_min_ones;
+		
+		
+		// Seconds
+		seconds = time_or_temp_in % 60;
+		// Seconds tens and ones
+		clock_sec_tens = seconds / 10;
+		clock_sec_ones = seconds % 10;
+		// Digits assigned
+		digit1 = clock_sec_tens;
+		digit0 = clock_sec_ones;
+		
     end
+	 
+	 // Temperature
+	 else begin
+		Temp = time_or_temp_in;
+		Temp_Hun = (Temp / 100);
+		Temp_Ten = ((Temp / 10) % 10);
+		Temp_One = (Temp % 10);
+		digit3 = Temp_Hun;
+		digit2 = Temp_Ten;
+		digit1 = Temp_One;
+		digit0 = 15;
+	end
+	
+end
+
+// The third input marks the digit which requires a decimal
+seven_seg_decoder Hex0 (digit0, type, 0,HEX0);
+seven_seg_decoder Hex1 (digit1, type, 0,HEX1);
+seven_seg_decoder Hex2 (digit2, type, 1,HEX2);
+seven_seg_decoder Hex3 (digit3, type, 0,HEX3);
+
+
 endmodule
