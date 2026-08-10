@@ -82,6 +82,7 @@ module OvenFSM(
                     if(timer_done) begin
                         state <= state+1;
                     end
+                    temp_on <= 1;
                     preheat <= 0;
                     timer_start <= 1;
                 end

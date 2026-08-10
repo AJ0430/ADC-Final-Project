@@ -127,7 +127,7 @@ module DE10_LITE_Golden_Top(
 //  REG/WIRE declarations
 //=======================================================
 
-
+OvenFSM oven(MAX10_CLK1_50, SW[9], SW[7], KEY[0], KEY[1], SW[8], SW[3:0], LEDR[1], LEDR[0], LEDR[2], HEX0, HEX1, HEX2, HEX3);
 
 
 //=======================================================
