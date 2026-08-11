@@ -2,42 +2,42 @@ module seven_seg_decoder(
     input [3:0] bcd,
     input type,
 	 input min,
-    output reg [7:0] seg 
+    output reg [7:0] seg
 );
     
 	 always @(*) begin
 	 
 	 // Clock Minute check
-	 if (type == 0 && min == 1) begin
+	 if (~type && min) begin
 			case(bcd)
 				// Inserts Decimal
-            4'h0: seg = 8'b01000000; 
-            4'h1: seg = 8'b01111001; 
-            4'h2: seg = 8'b00100100; 
-            4'h3: seg = 8'b00110000; 
-            4'h4: seg = 8'b00011001; 
-            4'h5: seg = 8'b00010010; 
-            4'h6: seg = 8'b00000010; 
-            4'h7: seg = 8'b01111000; 
-            4'h8: seg = 8'b00000000; 
-            4'h9: seg = 8'b00010000;
+            0: seg = 8'b01000000; 
+            1: seg = 8'b01111001; 
+            2: seg = 8'b00100100; 
+            3: seg = 8'b00110000; 
+            4: seg = 8'b00011001; 
+            5: seg = 8'b00010010; 
+            6: seg = 8'b00000010; 
+            7: seg = 8'b01111000; 
+            8: seg = 8'b00000000; 
+            9: seg = 8'b00010000;
             default: seg = 8'b01111111; 
 			endcase
     end
 	 // Normal digit display
 	 else begin
 			case(bcd)
-            4'h0: seg = 8'b11000000; 
-            4'h1: seg = 8'b11111001; 
-            4'h2: seg = 8'b10100100; 
-            4'h3: seg = 8'b10110000; 
-            4'h4: seg = 8'b10011001; 
-            4'h5: seg = 8'b10010010; 
-            4'h6: seg = 8'b10000010; 
-            4'h7: seg = 8'b11111000; 
-            4'h8: seg = 8'b10000000; 
-            4'h9: seg = 8'b10010000;
-				4'h15: seg = 8'b00001110;
+            0: seg = 8'b11000000; 
+            1: seg = 8'b11111001; 
+            2: seg = 8'b10100100; 
+            3: seg = 8'b10110000; 
+            4: seg = 8'b10011001; 
+            5: seg = 8'b10010010; 
+            6: seg = 8'b10000010; 
+            7: seg = 8'b11111000; 
+            8: seg = 8'b10000000; 
+            9: seg = 8'b10010000;
+				10: seg = 8'b00001110;
             default: seg = 8'b11111111; 
         endcase
 	 end
@@ -73,10 +73,10 @@ reg [3:0] Temp_One;
 always @(*) begin
 	 
 	 // Clock
-	 if (type == 0) begin
+	 if (~type) begin
 		
 		// Minutes
-		minutes = (time_or_temp_in / 60);
+		minutes = time_or_temp_in / 60;
 		// Tens and ones place
 		clock_min_tens = minutes / 10;
 		clock_min_ones = minutes % 10;
@@ -105,7 +105,7 @@ always @(*) begin
 		digit3 = Temp_Hun;
 		digit2 = Temp_Ten;
 		digit1 = Temp_One;
-		digit0 = 15;
+		digit0 = 10;
 	end
 	
 end

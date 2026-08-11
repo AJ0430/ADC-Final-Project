@@ -10,7 +10,6 @@ module ovenTemp(
     output reg [9:0] current_temp,
     output reg preheat_done
     );
-	 initial current_temp = 65;
 
     always @(posedge clk) begin
         if (reset_temp) begin

@@ -10,7 +10,6 @@ module Bake_Timer_and_Timer_Selection(
 
     reg old_Time_Up;
     reg old_Time_Down;
-	 
 
     always @(posedge clk) begin
         if (Reset_Timer_Selection) begin

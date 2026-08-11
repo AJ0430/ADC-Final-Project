@@ -18,12 +18,13 @@ module OvenFSM(
     wire pulse;
 	wire [9:0] timerset;
     wire [9:0] tempset;
+    wire [9:0] timerout;
     reg temp_on;
     wire [9:0] current_temp;
-    reg [9:0] display_out;
-    wire [9:0]timerout;
-	 wire [9:0]timeofdayout;
-    reg timehexsel;
+    wire [9:0] display_out;
+    reg [9:0]timesel;
+    wire [9:0]timeout;
+    wire timehexsel;
 
 	 // State machine
     always @(posedge clk) begin
@@ -42,7 +43,6 @@ module OvenFSM(
                     preheat <= 0;
                     temp_on <= 0;
                     timer_start <= 0;
-						  
                 end
 
                 3'b001: begin
@@ -93,6 +93,7 @@ module OvenFSM(
                     timer_start <= 0;
                     preheat <= 0;
                     temp_on <= 0;
+                    timer_start <= 0;
                 end
 
 
@@ -105,13 +106,19 @@ module OvenFSM(
     end
 
     always @(*) begin
+        if (oven_on) begin
+            timesel = timerout;
+        end
+        else begin
+            timesel = timerset;
+        end
         if(oven_on) begin
             if(display_select)begin
                 display_out = current_temp;
                 timehexsel = 1;
             end 
             else begin
-                display_out = timerout;
+                display_out = timeout;
                 timehexsel = 0;
             end
         end
@@ -121,17 +128,15 @@ module OvenFSM(
                 timehexsel = 1;
             end 
             else begin
-                display_out = timeofdayout;
+                display_out = timeout;
                 timehexsel = 0;
             end
         end
 
 
     end
-	 tod timeofday(clk, pulse, reset, timeofdayout);
     clockdivider tick(clk, reset, pulse);
     Bake_Timer_and_Timer_Selection tempandtime(temp_up, temp_down, reset, clk, temp_sw, timerset, tempset);
     ovenTemp oventemperature(reset, temp_on, pulse, clk, tempset, preheat, oven_on, heater_on, current_temp, preheat_done);
-    oventimer timer(clk, pulse, reset, timerset, timer_start, heater_on, timerout, timer_done);
-	 seven_segment_controller seg_inst(display_out, timehexsel, HEX0, HEX1, HEX2, HEX3);
+    oventimer timer(clk, pulse, reset, timerset, timer_start, timerout, timer_done);
 endmodule
